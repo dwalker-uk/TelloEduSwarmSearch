@@ -1,6 +1,6 @@
 import time
 import threading
-from typing import Union
+from typing import Union, Optional
 from contextlib import contextmanager
 from comms_manager import CommsManager
 
@@ -19,7 +19,7 @@ class FlyTello:
     # CLASS INITIALISATION AND CONTEXT HANDLER
     #
 
-    def __init__(self, tello_sn_list: list, first_ip: int=1, last_ip: int=254):
+    def __init__(self, tello_sn_list: list, get_status=False, first_ip: int=1, last_ip: int=254):
         """ Initiate FlyTello, starting up CommsManager, finding and initialising our Tellos, and reporting battery.
 
             :param tello_sn_list: List of serial numbers, in the order we want to number the Tellos.
@@ -27,7 +27,7 @@ class FlyTello:
             :param last_ip: Optionally, we can specify a smaller range of IP addresses to speed up the search.
         """
         self.tello_mgr = CommsManager()
-        self.tello_mgr.init_tellos(sn_list=tello_sn_list, first_ip=first_ip, last_ip=last_ip)
+        self.tello_mgr.init_tellos(sn_list=tello_sn_list, get_status=get_status, first_ip=first_ip, last_ip=last_ip)
         self.tello_mgr.queue_command('battery?', 'Read', 'All')
         self.individual_behaviour_threads = []
         self.in_sync_these = False
@@ -505,11 +505,36 @@ class FlyTello:
         self.tello_mgr.get_tello(tello).flight_complete = True
 
     #
+    # STATUS MESSAGE PROCESSING
+    #
+
+    def print_status(self, tello: Union[int, str]='All', sync: bool=False) -> None:
+        """ Print the entire Status Message to the Python Console, for the specified Tello(s). """
+        if sync and not self.in_sync_these:
+            self.tello_mgr.wait_sync()
+        if tello == 'All':
+            for tello in self.tello_mgr.tellos:
+                print('Tello %d Status: %s' % (tello.num, tello.status))
+        else:
+            tello = self.tello_mgr.get_tello(num=tello)
+            print('Tello %d Status: %s' % (tello.num, tello.status))
+
+    def get_status(self, key: str, tello: int, sync: bool=False) -> Optional[str]:
+        """ Return the value of a specific key from an individual Tello  """
+        if sync and not self.in_sync_these:
+            self.tello_mgr.wait_sync()
+        tello = self.tello_mgr.get_tello(num=tello)
+        if key in tello.status:
+            return tello.status[key]
+        return None
+
+    #
     # PRIVATE SHORTCUT METHODS
     #
 
     def _command(self, command, command_type, tello_num, sync):
         if sync and tello_num == 'All' and not self.in_sync_these:
+            # TODO: Review whether tello_num=='All' should preclude wait_sync - might want to keep it!
             self.tello_mgr.wait_sync()
         self.tello_mgr.queue_command(command, command_type, tello_num)
 

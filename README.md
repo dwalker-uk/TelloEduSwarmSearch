@@ -40,7 +40,7 @@ from fly_tello import FlyTello
 with FlyTello(['XXX']) as fly:
     fly.set_ap_wifi(ssid='MY_SSID', password='MY_PASSWORD')
 ```
-The above code initialises FlyTello, and then sets the SSID and Password you supply.  You can get the Serial Number for your Tello from a tiny sticker inside the battery compartment, but by using `'XXX'` here FlyTello will print the Serial Number to the Terminal anyway.  You should usually provide the Serial Number when initialising FlyTello, but it's not essential here because there's only one.
+The above code initialises FlyTello, and then sets the SSID and Password you supply.  You can get the Serial Number for your Tello from a tiny sticker inside the battery compartment, but by using `'XXX'` here FlyTello will print the Serial Number to the Console anyway.  You should usually provide the Serial Number when initialising FlyTello, but it's not essential here because there's only one.
 
 **Project Structure**
 
@@ -106,5 +106,5 @@ There are some limitations of what can be done with this project and the Tello E
 The project as it is currently is enough to fly one or more Tello Edu drones via a simple yet sophisticated set of controls.  Expanding its capabilities is easy, with layers of modules which expose increasingly more detailed / low-level functionality.  I'd suggest adding or changing:
 * Position Tracking.  By tracking the relative position of each Tello from when it launches, this will enable behaviours such as "return to start", and will e.g. allow Mission Pad locations to be shared with other Tellos in the swarm - a pre-requisite for collaborative swarm behaviour.  Clearly accuracy will decrease over time, but could be regularly restored using the `reorient()` method described above.
 * Better Error Checking.  Some error checking is already implemented, but it's incomplete.  Getting the arc radius correct for a curve is sometimes difficult, and this project could be more helpful in identifying the errors and suggesting valid alternative values.
-* Command Stream & Logging.  Currently all commands either sent or received are printed to the Python Terminal.  These would be better saved in a detailed log file, so that only key information is presented to the user in the Terminal.
+* Command Stream & Logging.  Currently all commands either sent or received are printed to the Python Console.  These would be better saved in a detailed log file, so that only key information is presented to the user in the Console.
 

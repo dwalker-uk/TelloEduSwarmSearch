@@ -39,7 +39,7 @@ class CommsManager:
         # Reference to all active Tellos
         self.tellos = []
 
-    def init_tellos(self, sn_list, first_ip=1, last_ip=254):
+    def init_tellos(self, sn_list, get_status=False, first_ip=1, last_ip=254):
         """ Search the network until found the specified number of Tellos, then get each Tello ready for use.
 
             This must be run once; generally the first thing after initiating CommsManager.
@@ -49,6 +49,7 @@ class CommsManager:
             Finally, each Tello is queried for its serial number, which is stored in the Tello object with its number.
 
             :param sn_list: List of serial numbers, in order we want to number the Tellos.
+            :param get_status: True to listen for and record the status messages from the Tellos.
             :param first_ip: If known, we can specify a smaller range of IP addresses to speed up the search.
             :param last_ip: If known, we can specify a smaller range of IP addresses to speed up the search.
         """
@@ -94,6 +95,13 @@ class CommsManager:
             command_handler_thread = threading.Thread(target=self._command_handler, args=(tello,))
             command_handler_thread.daemon = True
             command_handler_thread.start()
+
+        # Start the status_handler, if needed.  This receives and constantly updates the status of each Tello.
+        if get_status:
+            self.status_socket.bind(('', self.status_port))
+            self.status_thread = threading.Thread(target=self._status_thread)
+            self.status_thread.daemon = True
+            self.status_thread.start()
 
         # Query each Tello to get its serial number - saving the cmd_id so we can match-up responses when they arrive
         tello_cmd_id = []
@@ -319,6 +327,32 @@ class CommsManager:
                 if send_on_error:
                     tello.add_to_command_queue(log_entry.on_error, log_entry.command_type, None)
                     print('[Command  %s]Queuing alternative cmd: %s' % (ip, log_entry.on_error))
+
+            except socket.error as exc:
+                if not self.terminate_comms:
+                    # Report socket errors, but only if we've not told it to terminate_comms.
+                    print('[Socket Error]Exception socket.error : %s' % exc)
+
+    def _status_thread(self):
+        """ Listen continually to status from the Tellos - should run in its own thread.
+
+            Listens for status messages from each Tello, and saves them in the Tello object as they arrive.
+        """
+
+        while not self.terminate_comms:
+            try:
+                response, ip = self.status_socket.recvfrom(1024)
+                response = response.decode()
+                if response == 'ok':
+                    continue
+                ip = ''.join(str(ip[0]))
+                tello = self._get_tello(ip)
+                tello.status.clear()
+                status_parts = response.split(';')
+                for status_part in status_parts:
+                    key_value = status_part.split(':')
+                    if len(key_value) == 2:
+                        tello.status[key_value[0]] = key_value[1]
 
             except socket.error as exc:
                 if not self.terminate_comms:

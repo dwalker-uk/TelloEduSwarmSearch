@@ -17,6 +17,7 @@ class Tello:
         self.command_queue = []
         self.log = []
         self.flight_complete = False
+        self.status = {}
 
     #
     # COMMAND_QUEUE AND LOG MANAGEMENT
