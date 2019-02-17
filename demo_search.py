@@ -1,6 +1,7 @@
 from fly_tello import FlyTello
 my_tellos = list()
 
+
 #
 # SIMPLE EXAMPLE - TWO TELLOs INDEPENDENTLY SEARCHING FOR MISSION PADS, IN AN OUTWARD SPIRAL PATTERN.
 #

@@ -105,7 +105,12 @@ class FlyTello:
         self._command_with_value('ccw', 'Control', angle, 1, 360, 'degrees', tello, sync)
 
     def flip(self, direction: str, tello: Union[int, str]='All', sync: bool=True) -> None:
-        """ Perform a flip in the specified direction (left/right/forward/back) - will jump ~30cm in that direction. """
+        """ Perform a flip in the specified direction (left/right/forward/back) - will jump ~30cm in that direction.
+
+            Note that Tello is unable to flip if battery is less than 50%!
+        """
+        # TODO: Add an on_error command, which moves the Tello in the direction of the flip should the flip fail, e.g.
+        # TODO:  if the battery is low.  Will ensure Tello is still in the expected position afterwards.
         # Convert left/right/forward/back direction inputs into the single letters (l/r/f/b) used by the Tello SDK.
         dir_dict = {'left': 'l', 'right': 'r', 'forward': 'f', 'back': 'b'}
         self._command_with_options('flip', 'Control', dir_dict[direction], ['l', 'r', 'f', 'b'], tello, sync)
@@ -145,6 +150,8 @@ class FlyTello:
             :param tello: The number of an individual Tello (1,2,...), or 'All'.
             :param sync: If True, will wait until all Tellos are ready before executing the command.
         """
+        # TODO: Add an on_error command, which still moves the Tello to its destination should the curve fail, e.g.
+        # TODO:  if the curve radius is invalid.  Will ensure Tello is still in the expected position afterwards.
         self._control_multi(command='curve',
                             val_params=[(x1, -500, 500, 'x1'),
                                         (y1, -500, 500, 'y1'),
@@ -202,6 +209,8 @@ class FlyTello:
             :param tello: The number of an individual Tello (1,2,...), or 'All'.
             :param sync: If True, will wait until all Tellos are ready before executing the command.
         """
+        # TODO: Add an on_error command, which still moves the Tello to its destination should the curve fail, e.g.
+        # TODO:  if the curve radius is invalid.  Will ensure Tello is still in the expected position afterwards.
         self._control_multi(command='curve',
                             val_params=[(x1, -500, 500, 'x1'),
                                         (y1, -500, 500, 'y1'),
@@ -547,6 +556,7 @@ class FlyTello:
             print('[FlyTello Error]%s %d - value must be %d-%d%s.' % (command, value, val_min, val_max, units))
 
     def _command_with_options(self, command, command_type, option, validate_options, tello_num, sync):
+        # TODO: Allow an on_error value to be passed through to queue_command
         if sync and tello_num == 'All' and not self.in_sync_these:
             self.tello_mgr.wait_sync()
         if option in validate_options:
@@ -568,6 +578,7 @@ class FlyTello:
             :param sync: Only valid if tello_num is 'All' - waits until all Tellos ready before sending the command.
             :return: Returns list of cmd_ids, from queue_command() - or nothing
         """
+        # TODO: Allow an on_error value to be passed through to queue_command
         if sync and tello_num == 'All' and not self.in_sync_these:
             self.tello_mgr.wait_sync()
 

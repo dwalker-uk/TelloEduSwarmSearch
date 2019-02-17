@@ -99,12 +99,13 @@ with FlyTello(my_tellos) as fly:
 
 There are some limitations of what can be done with this project and the Tello Edu:
 * No Video Stream.  The Tello is capable of sending its video stream, but only when connected directly to the in-build WiFi of a single Tello.  The video is not accessible when the Tellos are connected to a separate WiFi network, as required for swarming behaviour.  There is a workaround, which is to have multiple WiFi dongles connected to a single computer, one per Tello, but that hasn't been a focus for me.
-* Limited Status Messages.  The Tello does broadcast a regular (multiple times per second) status message, however this seems to be of limited value as many of the values do not seem to correspond with the Tello's behaviour, and others are rather erratic.  This requires further work.
+* Limited Status Messages.  The Tello does broadcast a regular (multiple times per second) status message, however this seems to be of limited value as many of the values do not seem to correspond with the Tello's behaviour, and others are rather erratic.  This requires further investigation to determine which are useful.
 
 **Recommendations**
 
 The project as it is currently is enough to fly one or more Tello Edu drones via a simple yet sophisticated set of controls.  Expanding its capabilities is easy, with layers of modules which expose increasingly more detailed / low-level functionality.  I'd suggest adding or changing:
 * Position Tracking.  By tracking the relative position of each Tello from when it launches, this will enable behaviours such as "return to start", and will e.g. allow Mission Pad locations to be shared with other Tellos in the swarm - a pre-requisite for collaborative swarm behaviour.  Clearly accuracy will decrease over time, but could be regularly restored using the `reorient()` method described above.
 * Better Error Checking.  Some error checking is already implemented, but it's incomplete.  Getting the arc radius correct for a curve is sometimes difficult, and this project could be more helpful in identifying the errors and suggesting valid alternative values.
+* Implement `on_error` alternative commands for Flips and Curves, which can easily fail due to e.g. battery low or incorrect curve radius values.  This will ensure Tello is less likely to end up in an unexpected location.
 * Command Stream & Logging.  Currently all commands either sent or received are printed to the Python Console.  These would be better saved in a detailed log file, so that only key information is presented to the user in the Console.
 
