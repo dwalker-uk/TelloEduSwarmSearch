@@ -95,6 +95,12 @@ with FlyTello(my_tellos) as fly:
         fly.run_individual(independent, tello_num=2, pad_id='m2')
 ```
 
+**Demos**
+
+Two demo videos are provided on YouTube, showing the capabilities of Tello Edu with this library.
+* Tello Edu Capabilities Demo (`demo_all_functions.py`) - https://youtu.be/F3rSW5VKsW8
+* Simple Searching Demo (`demo_search.py`) - https://youtu.be/pj2fJe7cPTE
+
 **Limitations**
 
 There are some limitations of what can be done with this project and the Tello Edu:
