@@ -91,7 +91,7 @@ possible_addr = []
 
 while True:
     # Do nothing until we've got a command
-    command = input('Emergency Stop?  ' ' or L = Auto-Land  |  S = Stop  |  E = Emergency Cut-Out  |  Q = Quit')
+    command = input('Emergency Stop?  ' ' or L = Auto-Land  |  S = Stop  |  E = Emergency Cut-Out  |  Q = Quit: ')
 
     # If not already initalised, initialise the network connection via a UDP socket
     if not control_socket:

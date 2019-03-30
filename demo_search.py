@@ -29,8 +29,10 @@ def threaded_search_test(tello, pad_id):
 #
 
 # Define the Tello's we're using, in the order we want them numbered
-my_tellos.append('0TQDFC6EDBBX03')
-my_tellos.append('0TQDFC6EDB4398')
+my_tellos.append('0TQDFC6EDBBX03')  # 1-Yellow
+my_tellos.append('0TQDFC6EDB4398')  # 2-Blue
+# my_tellos.append('0TQDFC6EDBH8M8')  # 3-Green
+# my_tellos.append('0TQDFC7EDB4874')  # 4-Red
 
 # Control the flight
 with FlyTello(my_tellos) as fly:
